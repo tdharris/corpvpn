@@ -1,0 +1,39 @@
+version: '3.3'
+services:
+  corpvpn:
+    build:
+      context: ./
+    container_name: corpvpn
+    cap_add:
+      - NET_ADMIN
+    # dns: [ "${VPN_NAME_SERVERS}" ]
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${DOCKER_BASE_DIR}/corpvpn/config:/config
+    env_file: .env
+    networks:
+      - corpvpn
+    ports:
+      - ${VPN_PRIVOXY_PORT}:8118
+      - ${VPN_SOCKS_PORT}:9118
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=0
+      - net.ipv6.conf.default.disable_ipv6=0
+      - net.ipv6.conf.lo.disable_ipv6=0
+      - net.ipv4.tcp_keepalive_intvl=1
+      - net.ipv4.tcp_keepalive_probes=3
+      - net.ipv4.tcp_keepalive_time=30  
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10M"
+        max-file: "10"
+    healthcheck:
+      test: /config/healthcheck.sh "${HEALTHCHECK_PUBLIC_IP}"
+      timeout: 10s
+      interval: 3m
+      start_period: 30s
+      retries: 2
+
+networks:
+  corpvpn:
