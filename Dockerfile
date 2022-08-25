@@ -1,5 +1,8 @@
 FROM ubuntu:22.04
 
+LABEL org.opencontainers.image.authors = "tdharris"
+LABEL org.opencontainers.image.source = "https://github.com/tdharris/corpvpn"
+
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         openconnect ocproxy privoxy dnsmasq wget && \

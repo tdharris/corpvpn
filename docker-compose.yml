@@ -1,6 +1,7 @@
 version: '3.3'
 services:
   corpvpn:
+    image: tdharris/corpvpn
     build:
       context: ./
     container_name: corpvpn
