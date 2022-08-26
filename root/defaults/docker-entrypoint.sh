@@ -11,9 +11,15 @@ OC_PID_FILE="/var/run/openconnect.pid"
 start() {
     # Privoxy
     log info "Starting privoxy..."
-    privoxy /config/privoxy/privoxy.conf
+    privoxy --no-daemon /config/privoxy/privoxy.conf >/proc/1/fd/1 2>&1 &
     privoxy_pid=$(pgrep privoxy)
     log info "✔ Started privoxy, pid:$privoxy_pid"
+
+    # dnsmasq
+    log info "Starting dnsmasq..."
+    dnsmasq --no-daemon --log-queries >/proc/1/fd/1 2>&1 &
+    dnsmasq_pid=$(pgrep dnsmasq)
+    log info "✔ Started dnsmasq, pid:$dnsmasq_pid"
 
     # OpenConnect
     # Check if process is running. Exit in this case.
@@ -75,6 +81,14 @@ stop() {
         kill -s SIGINT $privoxy_pid
         while [[ -e /proc/$privoxy_pid ]]; do sleep 1; done
         log info "✔ Stopped privoxy."
+    fi
+
+    local dnsmasq_pid=$(pgrep dnsmasq)
+    if [[ -n $dnsmasq_pid ]]; then
+        log info "Stopping dnsmasq..."
+        kill -s SIGINT $dnsmasq_pid
+        while [[ -e /proc/$dnsmasq_pid ]]; do sleep 1; done
+        log info "✔ Stopped dnsmasq."
     fi
     
     exit 143; # SIGTERM

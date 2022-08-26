@@ -15,6 +15,8 @@ services:
     ports:
       - ${VPN_PRIVOXY_PORT}:8118
       - ${VPN_SOCKS_PORT}:9118
+      - 53:53/tcp
+      - 53:53/udp
     sysctls:
       - net.ipv6.conf.all.disable_ipv6=0
       - net.ipv6.conf.default.disable_ipv6=0
@@ -33,6 +35,3 @@ services:
       interval: 3m
       start_period: 30s
       retries: 2
-
-networks:
-  corpvpn:
