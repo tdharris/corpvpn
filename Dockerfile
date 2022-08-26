@@ -5,7 +5,7 @@ LABEL org.opencontainers.image.source = "https://github.com/tdharris/corpvpn"
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        openconnect ocproxy privoxy dnsmasq wget && \
+        openconnect ocproxy privoxy tini wget && \
     apt-get update && \
     apt-get upgrade -y && \
     apt-get remove -fy && \
@@ -19,13 +19,13 @@ RUN mkdir -p /config/{openconnect,privoxy} && \
     cp -R /defaults/privoxy /config/privoxy && \
     cp -R /defaults/openconnect /config/openconnect && \
     cp /defaults/healthcheck.sh /config/healthcheck.sh && \
-    cp /defaults/entrypoint.sh /entrypoint.sh && \
+    cp /defaults/docker-entrypoint.sh /docker-entrypoint.sh && \
     chmod +x /config/healthcheck.sh && \
-    chmod +x /entrypoint.sh
+    chmod +x /docker-entrypoint.sh
 
 EXPOSE 9118
 EXPOSE 8118
 
-VOLUME [ "/config" ]
+VOLUME ["/config"] 
 
-ENTRYPOINT [ "/entrypoint.sh" ]
+ENTRYPOINT ["/usr/bin/tini", "--", "/docker-entrypoint.sh"]
