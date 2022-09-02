@@ -13,8 +13,8 @@ services:
     ports:
       - ${VPN_PRIVOXY_PORT}:8118
       - ${VPN_SOCKS_PORT}:9118
-      - 5354:53/tcp
-      - 5354:53/udp
+      - ${DNS_PORT}:53/tcp
+      - ${DNS_PORT}:53/udp
     sysctls:
       - net.ipv6.conf.all.disable_ipv6=0
       - net.ipv6.conf.default.disable_ipv6=0
@@ -28,8 +28,8 @@ services:
         max-size: "10M"
         max-file: "10"
     healthcheck:
-      test: /config/healthcheck.sh "${HEALTHCHECK_PUBLIC_IP}"
-      timeout: 10s
-      interval: 3m
-      start_period: 30s
+      test: /app/healthcheck.sh || exit 1 
+      timeout: 30s
+      interval: 5m
+      start_period: 60s
       retries: 2

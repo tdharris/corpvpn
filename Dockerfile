@@ -25,7 +25,6 @@ COPY root/ /
 
 RUN cp -R /defaults /config && \
     mv /config/docker-entrypoint.sh /docker-entrypoint.sh && \
-    chmod +x /config/healthcheck.sh && \
     chmod +x /docker-entrypoint.sh
 
 EXPOSE 8118
