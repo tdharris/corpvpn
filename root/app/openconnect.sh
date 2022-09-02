@@ -2,8 +2,11 @@
 
 set -e
 
+# shellcheck source=common.sh
+# shellcheck disable=SC1091
 source /app/common.sh
 
+log_prefix="[$(basename "${BASH_SOURCE[0]}")]"
 OC_PID_FILE="/var/run/openconnect.pid"
 
 start() {
@@ -14,35 +17,34 @@ start() {
     [ -c "/dev/net/tun" ] || mknod "/dev/net/tun" c 10 200
     tun_create_exit_code=$?
     if [[ ${tun_create_exit_code} != 0 ]]; then
-        fail "Unable to create tun device, try adding docker container option '--device=/dev/net/tun'"
+        fail "$log_prefix Unable to create tun device, try adding docker container option '--device=/dev/net/tun'"
     else
         chmod 600 /dev/net/tun
     fi
-    [[ -f ${OC_PID_FILE} ]] && ps -p $(< ${OC_PID_FILE}) &> /dev/null && log error "Openconnect is already running." && exit 0
-    log info "Starting openconnect..."
-    log info "Connecting to ${VPN_SERVER} to retrieve server certificate"
-    export servercert="$(\
+    [[ -f ${OC_PID_FILE} ]] && ps -p "$(< ${OC_PID_FILE})" &> /dev/null && log error "$log_prefix Openconnect is already running." && exit 0
+    log info "$log_prefix Starting openconnect..."
+    log info "$log_prefix Connecting to ${VPN_SERVER} to retrieve server certificate"
+    servercert="$(\
         yes no | \
         openconnect "${VPN_SERVER}" 2>&1 >/dev/null | \
         grep 'servercert' | \
         cut -d ' ' -f 6)"
     if [[ -z "${servecert}" ]]; then
-        log error "Failed to retrieve server certificate from ${VPN_SERVER}"
+        log error "$log_prefix Failed to retrieve server certificate from ${VPN_SERVER}"
         if [[ -z "${VPN_SERVER_FALLBACK_CERTFICIATE}" ]]; then
-            fail "No fallback server certificate provided."
+            fail "$log_prefix No fallback server certificate provided."
         fi
-        log info "Using server certificate: ${VPN_SERVER_FALLBACK_CERTFICIATE}"
-        export servercert="${VPN_SERVER_FALLBACK_CERTFICIATE}"
+        log info "$log_prefix Using server certificate: ${VPN_SERVER_FALLBACK_CERTFICIATE}"
+        servercert="${VPN_SERVER_FALLBACK_CERTFICIATE}"
     fi
-    log debug "Server certificate: ${servercert}"
+    log debug "$log_prefix Server certificate: ${servercert}"
 
     # Uncomment to test
     # sleep infinity
     # wait
 
     echo "${VPN_PASS}" | \
-    openconnect \
-        --quiet \
+    if ! openconnect \
         --background \
         --pid-file="${OC_PID_FILE}" \
         --interface=tun \
@@ -53,31 +55,33 @@ start() {
         --user="${VPN_USER}" \
         --protocol=pulse \
         --authgroup="Smartphone Push" \
-        "${VPN_SERVER}" >/proc/1/fd/1 2>&1
-    [[ $? -ne 0 ]] && log error "Openconnect failed to start!" && rm -f ${OC_PID_FILE} && exit 1
-
+        --dump-http-traffic \
+        --timestamp \
+        "${VPN_SERVER}" >/proc/1/fd/1 2>&1; then
+        log error "$log_prefix Openconnect failed to start!" && rm -f ${OC_PID_FILE} && exit 1
+    fi
     openconnect_pid=$(pgrep openconnect)
     if [[ -z ${openconnect_pid} ]]; then
-        fail "Failed to start openconnect. Exiting."
+        fail "$log_prefix Failed to start openconnect. Exiting."
     fi
 
-    log info "Waiting for tun device..."
+    log info "$log_prefix Waiting for tun device..."
     retry ifconfig tun >/dev/null
-    log info "✔ Started openconnect, pid:${openconnect_pid}"
+    log info "$log_prefix ✔ Started openconnect, pid:${openconnect_pid}"
 
 }
 
 stop() {
 
-    if [[ -f ${OC_PID_FILE} ]] && ps -p $(< ${OC_PID_FILE}) &> /dev/null; then
+    if [[ -f ${OC_PID_FILE} ]] && ps -p "$(< ${OC_PID_FILE})" &> /dev/null; then
         local -r oc_pid="$(< ${OC_PID_FILE})"
-        log info "Stopping openconnect..."
+        log info "$log_prefix Stopping openconnect..."
         kill -s SIGINT "${oc_pid}"
         while [[ -e "/proc/${oc_pid}" ]]; do sleep 1; done
         rm -f ${OC_PID_FILE} 2>/dev/null
-        log info "✔ Stopped openconnect."
+        log info "$log_prefix ✔ Stopped openconnect."
     else
-        log warn "Openconnect is not running."
+        log warn "$log_prefix Openconnect is not running."
     fi
 
 }
