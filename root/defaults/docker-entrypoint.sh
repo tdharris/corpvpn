@@ -11,12 +11,9 @@ source /app/common.sh
 start() {
   log info "$log_prefix Starting services..."
   /app/openconnect.sh start
-  # shellcheck source=../app/routes.sh
-  # shellcheck disable=SC1091
-  source /app/routes.sh
+  /app/routes.sh
   /app/privoxy.sh start
-  # shellcheck disable=SC2154
-  /app/microsocks.sh start "${docker_ip}"
+  /app/microsocks.sh start
   /app/dnsmasq.sh start
   log info "$log_prefix ✔ Successfully started all services."
 }

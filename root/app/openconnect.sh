@@ -31,11 +31,11 @@ start() {
         cut -d ' ' -f 6)"
     if [[ -z "${servecert}" ]]; then
         log error "$log_prefix Failed to retrieve server certificate from ${VPN_SERVER}"
-        if [[ -z "${VPN_SERVER_FALLBACK_CERTFICIATE}" ]]; then
+        if [[ -z "${VPN_SERVER_FALLBACK_CERTIFICATE}" ]]; then
             fail "$log_prefix No fallback server certificate provided."
         fi
-        log info "$log_prefix Using server certificate: ${VPN_SERVER_FALLBACK_CERTFICIATE}"
-        servercert="${VPN_SERVER_FALLBACK_CERTFICIATE}"
+        log info "$log_prefix Using server certificate: ${VPN_SERVER_FALLBACK_CERTIFICATE}"
+        servercert="${VPN_SERVER_FALLBACK_CERTIFICATE}"
     fi
     log debug "$log_prefix Server certificate: ${servercert}"
 
