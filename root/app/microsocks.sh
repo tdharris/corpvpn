@@ -9,18 +9,8 @@ source /app/common.sh
 log_prefix="[$(basename "${BASH_SOURCE[0]}")]"
 
 start() {
-    local -r bind_ip="${1}"
-
-    if [[ -z "${bind_ip}" ]]; then
-        docker_ip="$(ifconfig eth0 | grep -P -o -m 1 '(?<=inet\s)[^\s]+')"
-        bind_ip="${docker_ip}"
-        if [[ -z "${bind_ip}" ]]; then
-            fail "$log_prefix Unable to start microsocks, missing bind_ip:${bind_ip}"
-        fi
-    fi
-
     log info "$log_prefix Starting microsocks..."
-    microsocks -i "${bind_ip}" -p 9118 &
+    microsocks -i 127.0.0.1 -p 9118 &
     log info "$log_prefix ✔ Started microsocks, pid:$(pgrep microsocks)"
 }
 
