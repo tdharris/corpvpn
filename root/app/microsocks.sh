@@ -10,7 +10,7 @@ log_prefix="[$(basename "${BASH_SOURCE[0]}")]"
 
 start() {
     log info "$log_prefix Starting microsocks..."
-    microsocks -i 127.0.0.1 -p 9118 &
+    microsocks -p 9118 &
     log info "$log_prefix ✔ Started microsocks, pid:$(pgrep microsocks)"
 }
 
