@@ -21,7 +21,6 @@ This connects to the Corporate VPN with an `openconnect` client using the `pulse
     DEFAULT_PGID=<gid for user>
 
     VPN_SERVER=<vpn server address>
-    VPN_SERVER_FALLBACK_CERTIFICATE=<optional fallback>
     VPN_USER=<vpn username>
     VPN_PASS=<vpn password>
     HEALTHCHECK_PUBLIC_IP=<your public ip>
