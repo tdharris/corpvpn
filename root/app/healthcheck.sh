@@ -23,6 +23,7 @@ for svc in "${services[@]}"; do
     fi
 done
 
-if [[ -n "${HEALTHCHECK_PUBLIC_IP}" ]]; then
-    http_proxy=http://$(hostname -i):${VPN_PRIVOXY_PORT} wget -Y on -q -O - ifconfig.co/ip | grep -v  "${HEALTHCHECK_PUBLIC_IP}" || exit 1
-fi
+vpn_ip="$(ifconfig tun | grep -P -o -m 1 '(?<=inet\s)[^\s]+')"
+[[ -z "${vpn_ip}" ]] && fail "$log_prefix tun device not found!"
+ip_check="$(wget -Y on -q -O - ifconfig.co/ip)"
+echo "${ip_check}" | grep -q "${vpn_ip}" || fail "$log_prefix ip check failed - found ${ip_check} instead of ${vpn_ip}!"

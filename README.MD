@@ -23,7 +23,6 @@ This connects to the Corporate VPN with an `openconnect` client using the `pulse
     VPN_SERVER=<vpn server address>
     VPN_USER=<vpn username>
     VPN_PASS=<vpn password>
-    HEALTHCHECK_PUBLIC_IP=<your public ip>
     LAN_NETWORK=<lan ipv4 network>/<cidr notation>
 
     VPN_PRIVOXY_PORT=8118
