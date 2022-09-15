@@ -139,6 +139,38 @@ Host *.<hostname>
   # ProxyCommand ncat --proxy 127.0.0.1:9118 --proxy-type socks5 %h %p
 ```
 
+#### GIT
+
+To configure connections for `git` through the proxy:
+
+- For `ssh` connectivity, see [SSH](#ssh) above.
+
+- For `http(s)` connectivity:
+
+    Global proxy:
+
+    ```shell
+    git config --global http.proxy http://127.0.0.1:8118
+    git config --global https.proxy https://127.0.0.1:8118
+    ```
+
+    URL specific proxy:
+
+    ```shell
+    git config --global http.http://domain.com.proxy http://127.0.0.1:8118
+    git config --global https.https://domain.com.proxy https://127.0.0.1:8118
+    ```
+
+    **Note** : The above url-specific syntax is a bit strange, but generates the following in `~/.gitconfig`:
+
+    ```shell
+    [http]
+    [http "http://domain.com"]
+        proxy = http://127.0.0.1:8118
+    [https "https://domain.com"]
+        proxy = https://127.0.0.1:8118
+    ```
+
 ## Related Links
 
 - [OpenConnect](https://www.infradead.org/openconnect/manual.html) - Multi-protocol VPN client, for Cisco AnyConnect VPNs and others.
