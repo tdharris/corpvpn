@@ -71,10 +71,19 @@ Configure clients as an opt-in approach to forward requests in through the proxy
 - [Safari](https://support.apple.com/guide/safari/set-up-a-proxy-server-ibrw1053/mac)
 - [Windows](https://support.microsoft.com/en-us/windows/use-a-proxy-server-in-windows-03096c53-0554-4ffe-b6ab-8b1deee8dae1)
 - [Mac](https://support.apple.com/guide/mac-help/enter-proxy-server-settings-on-mac-mchlp25912/mac)
+- [Linux Ubuntu](https://help.ubuntu.com/stable/ubuntu-help/net-proxy.html.en)
 
 ### Linux
 
-For terminal or shell-based environments, most approaches include forwarding into the proxy with a tool like `ncat`, `netcat`, `nc`, or `corkscrew` on mac OS. There are various versions of these tools, which are similar, but may have differing argument syntaxes. 
+The following are options for other client-based approaches:
+
+- [Environment Variables](#environment-variables)
+- [SSH](#ssh)
+- [GIT](#git)
+
+#### Pre-Requisites
+
+For terminal or shell-based environments, most approaches include forwarding into the proxy with a tool like `ncat`, `netcat`, `nc`, or optionally `corkscrew` on mac OS. There are various versions of these tools, which are similar, but likely have different arguments or syntaxes. 
 
 Recommend installing the following with `brew` which includes `ncat`, which is referenced in the below examples or install directly as needed:
 
@@ -175,6 +184,7 @@ To configure connections for `git` through the proxy:
 
 - [OpenConnect](https://www.infradead.org/openconnect/manual.html) - Multi-protocol VPN client, for Cisco AnyConnect VPNs and others.
 - [Privoxy](https://www.privoxy.org/) - non-caching web proxy.
+- [MicroSocks](https://github.com/rofl0r/microsocks) - multithreaded, small, efficient SOCKS5 server.
 - [Dnsmasq](https://thekelleys.org.uk/dnsmasq/doc.html) - local dns server.
 - [direnv](https://direnv.net/) - shell extension that can load and unload environment variables.
 - [ssh_config](https://man7.org/linux/man-pages/man5/ssh_config.5.html) - linux manual page.
