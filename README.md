@@ -28,6 +28,8 @@ This connects to the Corporate VPN with an `openconnect` client using the `pulse
     VPN_PRIVOXY_PORT=8118
     VPN_SOCKS_PORT=9118
     DNS_PORT=5354
+
+    AUTO_RESTART_SERVICES=false
     ```
 
 3. Run with `docker-compose`:
