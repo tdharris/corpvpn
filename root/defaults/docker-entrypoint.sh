@@ -10,20 +10,29 @@ source /app/common.sh
 
 start() {
   log info "$log_prefix Starting services..."
-  /app/openconnect.sh start
-  /app/routes.sh
+  if [[ "$ENABLE_VPN" == "true" ]]; then
+    log info "$log_prefix VPN is enabled."
+    /app/openconnect.sh start
+    /app/routes.sh
+  fi
   /app/privoxy.sh start
   /app/microsocks.sh start
-  /app/dnsmasq.sh start
+  if [[ "$ENABLE_DNS" == "true" ]]; then
+    /app/dnsmasq.sh start
+  fi
   log info "$log_prefix ✔ Successfully started all services."
 }
 
 stop() {
   log info "$log_prefix Stopping services..."
-  /app/openconnect.sh stop
+  if [[ "$ENABLE_VPN" == "true" ]]; then
+    /app/openconnect.sh stop
+  fi
   /app/privoxy.sh stop
   /app/microsocks.sh stop
-  /app/dnsmasq.sh stop
+  if [[ "$ENABLE_DNS" == "true" ]]; then
+    /app/dnsmasq.sh stop
+  fi
   log info "$log_prefix ✔ Successfully stoped all services."
 
   exit 143; # SIGTERM
