@@ -16,20 +16,36 @@ ENABLE_VPN="${1:-false}"
 ENABLE_DNS="${2:-false}"
 AUTO_RESTART_SERVICES="${3:-false}"
 
+max_retries=3
+state_dir="/app/state"
+mkdir -p $state_dir 2>/dev/null
+
 for svc in "${services[@]}"; do
     if [[ "$svc" == "openconnect" && ! "$ENABLE_VPN" == "true" ]]; then
         continue
     elif [[ "$svc" == "dnsmasq" && ! "$ENABLE_DNS" == "true" ]]; then
         continue
     fi
-
+    
     if ! pgrep "$svc" >/dev/null; then
+        state_file="$state_dir/$svc.state"
+        if [[ -f "$state_file" ]]; then
+            retries=$(cat "$state_file")
+            if [[ "$retries" -ge $max_retries ]]; then
+                log error "$log_prefix $svc failed to start after $max_retries retries, exiting"
+                exit 1
+            fi
+        else
+            retries=0
+        fi
         log info "$log_prefix $svc is not running"
         if "$AUTO_RESTART_SERVICES"; then
             "/app/$svc.sh" start
             if [[ "$svc" == "openconnect" ]]; then
                 source /app/routes.sh
             fi
+            retries=$((retries + 1))
+            echo "$retries" > "$state_file"
         fi
     fi
 done

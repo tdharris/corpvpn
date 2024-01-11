@@ -9,6 +9,7 @@ log_prefix="[$(basename "${BASH_SOURCE[0]}")]"
 source /app/common.sh
 
 start() {
+  init
   log info "$log_prefix Starting services..."
   if [[ "$ENABLE_VPN" == "true" ]]; then
     log info "$log_prefix VPN is enabled."
@@ -21,6 +22,10 @@ start() {
     /app/dnsmasq.sh start
   fi
   log info "$log_prefix ✔ Successfully started all services."
+}
+
+init() {
+  rm /app/state/*.state 2>/dev/null
 }
 
 stop() {
