@@ -10,6 +10,7 @@ source /app/common.sh
 
 start() {
   init
+
   log info "$log_prefix Starting services..."
   if [[ "$ENABLE_VPN" == "true" ]]; then
     log info "$log_prefix VPN is enabled."
@@ -25,6 +26,7 @@ start() {
 }
 
 init() {
+  show_versions
   rm /app/state/*.state 2>/dev/null
 }
 
@@ -41,6 +43,15 @@ stop() {
   log info "$log_prefix ✔ Successfully stoped all services."
 
   exit 143; # SIGTERM
+}
+
+show_versions() {
+  log info "$log_prefix Versions:"
+  log info "$log_prefix   openconnect: $(openconnect --version | head -n 1)"
+  log info "$log_prefix   privoxy: $(privoxy --version | head -n 1)"
+  # log info "$log_prefix   microsocks: $(microsocks --version | head -n 1)"
+  log info "$log_prefix   dnsmasq: $(dnsmasq --version | head -n 1)"
+  log info "$log_prefix   ubuntu: $(cat /etc/os-release | grep VERSION= | cut -d'=' -f2 | tr -d '"')"
 }
 
 start

@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 LABEL org.opencontainers.image.authors = "tdharris"
 LABEL org.opencontainers.image.source = "https://github.com/tdharris/corpvpn"
@@ -17,7 +17,8 @@ RUN apt-get update && \
 RUN mkdir -p /tmp/microsocks && cd /tmp/microsocks && \
     curl -s https://api.github.com/repos/rofl0r/microsocks/releases/latest | jq -r '.tarball_url' | \
         xargs wget -O - | tar xz --transform 's/^rofl0r-microsocks.*\///' -C . && \
-    make install
+    make install && \
+    rm -rf /tmp/microsocks
 
 VOLUME ["/config"] 
 

@@ -1,4 +1,4 @@
-version: '3.3'
+version: "3.3"
 services:
   corpvpn:
     image: tdharris/corpvpn
@@ -28,7 +28,7 @@ services:
         max-size: "10M"
         max-file: "10"
     healthcheck:
-      test: /app/healthcheck.sh "${ENABLE_VPN}" "${ENABLE_DNS}" "${AUTO_RESTART_SERVICES}" || exit 1 
+      test: /app/healthcheck.sh "${ENABLE_VPN}" "${ENABLE_DNS}" "${AUTO_RESTART_SERVICES}" || exit 1
       timeout: 30s
       interval: 5m
       start_period: 60s
