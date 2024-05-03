@@ -4,9 +4,17 @@ This connects to the Corporate VPN with an `openconnect` client using the `pulse
 
 ## Usage
 
+Consider the following approaches to using this `docker-compose` project.
+
+### Approach 1: Proxy Leveraging Host's Network
+
+In this approach, the Docker container acts as a proxy that leverages the host's network connection to the Corporate VPN. This is a simpler setup where the host machine is already connected to the Corporate VPN, and the Docker container simply provides proxy services (http(s), socks5, dns) to other clients to reach services within the VPN.
+
+To use this approach, you would run the docker-compose setup as usual, without needing to provide VPN connection details. The container will use the host's VPN connection to access the corporate network.
+
 1. Pre-requisites:
 
-    - `Smartphone Push` MFA Method has been configured for the `VPN_USER` account.
+    - The host machine is already connected to the Corporate VPN.
     - [Docker](https://docs.docker.com/engine/install/)
     - [Docker-Compose](https://docs.docker.com/compose/install/)
 
@@ -16,23 +24,51 @@ This connects to the Corporate VPN with an `openconnect` client using the `pulse
     cp .env.sample .env
     ```
 
-    ```shell
-    DEFAULT_PUID=<uid for user>
-    DEFAULT_PGID=<gid for user>
+    Update the following in the `.env` file:
 
+    ```shell
+    ENABLE_VPN=false
+    LAN_NETWORK=<lan ipv4 network>/<cidr notation>
+    ```
+
+3. See [Common Steps for Both Approaches](#common-steps-for-both-approaches) below.
+
+### Approach 2: Self-Contained VPN Connection
+
+In this approach, the Docker container connects to the Corporate VPN using `openconnect` and with a configurable protocol. This creates a self-contained setup where the VPN connection is managed within the Docker container itself. This approach is more complex and requires the VPN server to support connections from `openconnect` with the possibility of using MFA methods like `Smartphone Push`.
+
+To use this approach, you would need to provide the VPN connection details (`VPN_SERVER`, `VPN_USER`, `VPN_PASS`, `VPN_PROTOCOL`, `VPN_AUTH_GROUP`). The container will use these details to establish its own VPN connection.
+
+Please note that not all VPN servers support connections from `openconnect`. Check with your IT department or VPN provider to see if this approach is permitted.
+
+1. Pre-requisites:
+
+    - `Smartphone Push` MFA Method has been configured for the `VPN_USER` account. (Configurable with `VPN_AUTH_GROUP`)
+    - [Docker](https://docs.docker.com/engine/install/)
+    - [Docker-Compose](https://docs.docker.com/compose/install/)
+
+2. Setup Environment Variables:
+
+    ```console
+    cp .env.sample .env
+    ```
+
+    Update the following in the `.env` file:
+
+    ```shell
     VPN_SERVER=<vpn server address>
     VPN_USER=<vpn username>
     VPN_PASS=<vpn password>
     LAN_NETWORK=<lan ipv4 network>/<cidr notation>
-
-    VPN_PRIVOXY_PORT=8118
-    VPN_SOCKS_PORT=9118
-    DNS_PORT=5354
-
-    AUTO_RESTART_SERVICES=false
     ```
 
-3. Run with `docker-compose`:
+3. See [Common Steps for Both Approaches](#common-steps-for-both-approaches) below.
+
+### Common Steps for Both Approaches
+
+After setting up the pre-requisites and environment variables above, follow these steps to run the `docker-compose` setup:
+
+1. Run with `docker-compose`:
 
     ```console
     docker-compose up -d
@@ -50,9 +86,9 @@ This connects to the Corporate VPN with an `openconnect` client using the `pulse
         docker stop corpvpn
         ```
 
-4. Setup clients to connect via proxy provided by the container: `:8118` for `http(s)` or `:9118` for `socks`. See [Configure Clients](#configure-clients) for more details.
+2. Setup clients to connect via proxy provided by the container: `:8118` for `http(s)` or `:9118` for `socks`. See [Configure Clients](#configure-clients) for more details.
 
-5. (*optional*) Validate proxy and vpn connectivity:
+3. (*optional*) Validate proxy and vpn connectivity:
 
     To validate the `http(s)` `:8118` and `socks` `:9118` proxies, the following commands should be successful and return the vpn ip address, not your public ip address:
 

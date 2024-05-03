@@ -23,10 +23,6 @@ start() {
     fi
     [[ -f ${OC_PID_FILE} ]] && ps -p "$(< ${OC_PID_FILE})" &> /dev/null && log error "$log_prefix Openconnect is already running." && exit 0
 
-    # Uncomment to test
-    # sleep infinity
-    # wait
-
     log info "$log_prefix Starting openconnect..."
     echo "${VPN_PASS}" | \
     if ! openconnect \
@@ -37,8 +33,8 @@ start() {
         --passwd-on-stdin \
         --disable-ipv6 \
         --user="${VPN_USER}" \
-        --protocol=pulse \
-        --authgroup="Smartphone Push" \
+        --protocol="${VPN_PROTOCOL:-"pulse"}" \
+        --authgroup="${VPN_AUTH_GROUP:-"Smartphone Push"}" \
         --dump-http-traffic \
         --timestamp \
         "${VPN_SERVER}" >/proc/1/fd/1 2>&1; then
