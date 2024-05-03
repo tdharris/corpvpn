@@ -1,6 +1,11 @@
 # CorpVPN
 
-This connects to the Corporate VPN with an `openconnect` client using the `pulse` protocol with `Smartphone Push` MFA and exposes `http(s)`, `socks5`, `dns` proxies with `privoxy`, `microsocks`, `dnsmasq` to which clients can connect to reach services within the vpn.
+This project provides a Docker Compose setup to connect to a Corporate VPN and expose `http(s)`, `socks5`, `dns` proxies. It supports two approaches:
+
+1. **Proxy Using Host's VPN**: The container leverages the host's existing VPN connection.
+2. **Self-Contained VPN**: The container connects to the VPN using `openconnect`, creating a self-contained setup.
+
+Both approaches provide proxy services (`http(s)`, `socks5`, `dns`) with `privoxy`, `microsocks`, `dnsmasq` for clients to reach services within the VPN. Choose an approach based on your requirements and VPN server capabilities.
 
 ## Usage
 
