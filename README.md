@@ -31,12 +31,25 @@ services:
       - NET_ADMIN
     volumes:
       - /etc/localtime:/etc/localtime:ro
-    env_file: .env
+    environment:
+      - DEFAULT_PUID=1000
+      - DEFAULT_PGID=1000
+      - ENABLE_VPN=false # Optional
+      - ENABLE_DNS=true # Optional
+      - AUTOHEAL_ENABLED=false # Optional
+      - LAN_NETWORK=192.168.1.0/24 # Optional
+      - VPN_SERVER= # Optional
+      - VPN_USER= # Optional
+      - VPN_PASS= # Optional
+      - VPN_PROTOCOL=pulse # Optional
+      - VPN_AUTH_GROUP="Smartphone Push" # Optional
+    # env_file:
+    #   - .env # Optional alternative to environment (see .env.sample)
     ports:
-      - ${VPN_PRIVOXY_PORT}:8118
-      - ${VPN_SOCKS_PORT}:9118
-      - ${DNS_PORT}:53/tcp
-      - ${DNS_PORT}:53/udp
+      - 8118:8118 # PRIVOXY_PORT
+      - 9118:9118 # SOCKS_PORT
+      - 5354:53/tcp # DNS_PORT
+      - 5354:53/udp # DNS_PORT
     sysctls:
       - net.ipv6.conf.all.disable_ipv6=0
       - net.ipv6.conf.default.disable_ipv6=0
@@ -50,11 +63,11 @@ services:
         max-size: "10M"
         max-file: "10"
     healthcheck:
-      test: /app/healthcheck.sh "${ENABLE_VPN}" "${ENABLE_DNS}" "${AUTO_RESTART_SERVICES}" || exit 1
+      test: /app/healthcheck.sh || exit 1
       timeout: 30s
-      interval: 5m
+      interval: 60s
       start_period: 60s
-      retries: 2
+      retries: 3
 ```
 
 - See [.env.sample⁠](.env.sample) for Environment Variables. Review usage approaches⁠ below for additional information.
@@ -72,17 +85,11 @@ To use this approach, you would run the docker-compose setup as usual, without n
     - [Docker](https://docs.docker.com/engine/install/)
     - [Docker-Compose](https://docs.docker.com/compose/install/)
 
-2. Setup Environment Variables:
+2. Update the following Environment Variables:
 
-    ```console
-    cp .env.sample .env
-    ```
-
-    Update the following in the `.env` file:
-
-    ```shell
-    ENABLE_VPN=false
-    LAN_NETWORK=<lan ipv4 network>/<cidr notation>
+    ```yaml
+    - ENABLE_VPN=false
+    - LAN_NETWORK=<lan ipv4 network>/<cidr notation>
     ```
 
 3. See [Common Steps for Both Approaches](#common-steps-for-both-approaches) below.
@@ -101,20 +108,14 @@ Please note that not all VPN servers support connections from `openconnect`. Che
     - [Docker](https://docs.docker.com/engine/install/)
     - [Docker-Compose](https://docs.docker.com/compose/install/)
 
-2. Setup Environment Variables:
+2. Update the following Environment Variables:
 
-    ```console
-    cp .env.sample .env
-    ```
-
-    Update the following in the `.env` file:
-
-    ```shell
-    ENABLE_VPN=true
-    VPN_SERVER=<vpn server address>
-    VPN_USER=<vpn username>
-    VPN_PASS=<vpn password>
-    LAN_NETWORK=<lan ipv4 network>/<cidr notation>
+    ```yaml
+    - ENABLE_VPN=true
+    - VPN_SERVER=<vpn server address>
+    - VPN_USER=<vpn username>
+    - VPN_PASS=<vpn password>
+    - LAN_NETWORK=<lan ipv4 network>/<cidr notation>
     ```
 
 3. See [Common Steps for Both Approaches](#common-steps-for-both-approaches) below.
@@ -129,7 +130,7 @@ After setting up the pre-requisites and environment variables above, follow thes
     docker-compose up -d
     ```
 
-    - Approve MFA request via `Smartphone Push`.
+    - (*optional*) Approve MFA request via `Smartphone Push`.
     - To monitor container logs:
 
         ```shell

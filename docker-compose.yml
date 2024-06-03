@@ -1,21 +1,32 @@
 version: "3.3"
 services:
   corpvpn:
-    image: tdharris/corpvpn
-    build:
-      context: ./
+    image: tdharris/corpvpn:latest
     container_name: corpvpn
     restart: always
     cap_add:
       - NET_ADMIN
     volumes:
       - /etc/localtime:/etc/localtime:ro
-    env_file: .env
+    environment:
+      - DEFAULT_PUID=1000
+      - DEFAULT_PGID=1000
+      - ENABLE_VPN=false # Optional
+      - ENABLE_DNS=true # Optional
+      - AUTOHEAL_ENABLED=false # Optional
+      - LAN_NETWORK=192.168.1.0/24 # Optional
+      - VPN_SERVER= # Optional
+      - VPN_USER= # Optional
+      - VPN_PASS= # Optional
+      - VPN_PROTOCOL=pulse # Optional
+      - VPN_AUTH_GROUP="Smartphone Push" # Optional
+    # env_file:
+    #   - .env # Optional
     ports:
-      - ${VPN_PRIVOXY_PORT}:8118
-      - ${VPN_SOCKS_PORT}:9118
-      - ${DNS_PORT}:53/tcp
-      - ${DNS_PORT}:53/udp
+      - 8118:8118 # VPN_PRIVOXY_PORT
+      - 9118:9118 # VPN_SOCKS_PORT
+      - 5354:53/tcp # DNS_PORT
+      - 5354:53/udp # DNS_PORT
     sysctls:
       - net.ipv6.conf.all.disable_ipv6=0
       - net.ipv6.conf.default.disable_ipv6=0
@@ -29,8 +40,8 @@ services:
         max-size: "10M"
         max-file: "10"
     healthcheck:
-      test: /app/healthcheck.sh "${ENABLE_VPN}" "${ENABLE_DNS}" "${AUTO_RESTART_SERVICES}" || exit 1
+      test: /app/healthcheck.sh || exit 1
       timeout: 30s
-      interval: 5m
+      interval: 60s
       start_period: 60s
-      retries: 2
+      retries: 3

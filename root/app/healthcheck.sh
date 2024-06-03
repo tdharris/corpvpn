@@ -12,9 +12,9 @@ services=(
     "dnsmasq"
 )
 
-ENABLE_VPN="${1:-false}"
-ENABLE_DNS="${2:-false}"
-AUTO_RESTART_SERVICES="${3:-false}"
+ENABLE_VPN="${1:-${ENABLE_VPN:-false}}"
+ENABLE_DNS="${2:-${ENABLE_DNS:-false}}"
+AUTOHEAL_ENABLED="${3:-${AUTOHEAL_ENABLED:-false}}"
 
 max_retries=3
 state_dir="/app/state"
@@ -39,7 +39,7 @@ for svc in "${services[@]}"; do
             retries=0
         fi
         log info "$log_prefix $svc is not running"
-        if "$AUTO_RESTART_SERVICES"; then
+        if "$AUTOHEAL_ENABLED"; then
             "/app/$svc.sh" start
             if [[ "$svc" == "openconnect" ]]; then
                 source /app/routes.sh
@@ -56,5 +56,5 @@ if [[ "$ENABLE_VPN" == "true" ]]; then
     ip_check="$(wget -Y on -q -O - ifconfig.co/ip)"
     echo "${ip_check}" | grep -q "${vpn_ip}" || fail "$log_prefix ip check failed - found ${ip_check} instead of ${vpn_ip}!"
 else
-    return 0
+    exit 0
 fi
