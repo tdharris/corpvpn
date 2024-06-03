@@ -27,7 +27,7 @@ start() {
 
 init() {
   show_versions
-  rm /app/state/*.state 2>/dev/null
+  rm /app/state/*.state 2>/dev/null || true
 }
 
 stop() {
