@@ -1,4 +1,4 @@
-# CorpVPN
+# CorpVPN Proxy
 
 <img src=".img/corpvpn.webp" height="300">
 
