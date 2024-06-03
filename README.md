@@ -7,7 +7,7 @@
 ![](https://img.shields.io/github/actions/workflow/status/tdharris/corpvpn/docker-publish.yml)
 ![](https://img.shields.io/docker/image-size/tdharris/corpvpn/latest)
 
-This `docker-compose` project provides a way to connect to a Corporate VPN and expose `http(s)`, `socks5`, `dns` proxies. It supports two approaches:
+This provides a way to connect to a Corporate VPN and expose HTTP(S), SOCKS5, and DNS proxies. It supports two approaches:
 
 1. **Proxy Using Host's VPN**: The container leverages the host's existing VPN connection.
 2. **Self-Contained VPN**: The container connects to the VPN using `openconnect`, creating a self-contained setup.
