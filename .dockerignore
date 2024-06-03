@@ -1,2 +1,6 @@
 .git/
+.github/
 .env.sample
+img/
+.gitignore
+.pre-commit-config.yaml

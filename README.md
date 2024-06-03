@@ -1,9 +1,12 @@
 # CorpVPN Proxy
 
-<img src=".img/corpvpn.webp" height="300">
+<img src="img/corpvpn.webp" height="300">
 
 ![](https://img.shields.io/github/license/tdharris/corpvpn)
 ![](https://img.shields.io/github/last-commit/tdharris/corpvpn)
+![](https://img.shields.io/docker/automated/tdharris/corpvpn)
+![](https://img.shields.io/github/actions/workflow/status/tdharris/corpvpn/docker-publish.yml)
+![](https://img.shields.io/docker/image-size/tdharris/corpvpn/latest)
 
 This `docker-compose` project provides a way to connect to a Corporate VPN and expose `http(s)`, `socks5`, `dns` proxies. It supports two approaches:
 
