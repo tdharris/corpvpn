@@ -1,6 +1,11 @@
 # CorpVPN
 
-This project provides a Docker Compose setup to connect to a Corporate VPN and expose `http(s)`, `socks5`, `dns` proxies. It supports two approaches:
+<img src=".img/corpvpn.webp" height="300">
+
+![](https://img.shields.io/github/license/tdharris/corpvpn)
+![](https://img.shields.io/github/last-commit/tdharris/corpvpn)
+
+This `docker-compose` project provides a way to connect to a Corporate VPN and expose `http(s)`, `socks5`, `dns` proxies. It supports two approaches:
 
 1. **Proxy Using Host's VPN**: The container leverages the host's existing VPN connection.
 2. **Self-Contained VPN**: The container connects to the VPN using `openconnect`, creating a self-contained setup.
@@ -9,7 +14,49 @@ Both approaches provide proxy services (`http(s)`, `socks5`, `dns`) with `privox
 
 ## Usage
 
-Consider the following approaches to using this `docker-compose` project.
+To help you get started creating a container from this image you can use docker-compose or the docker cli.
+
+### docker-compose (recommended)
+
+```yaml
+---
+version: "3.3"
+services:
+  corpvpn:
+    image: tdharris/corpvpn:latest
+    container_name: corpvpn
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    env_file: .env
+    ports:
+      - ${VPN_PRIVOXY_PORT}:8118
+      - ${VPN_SOCKS_PORT}:9118
+      - ${DNS_PORT}:53/tcp
+      - ${DNS_PORT}:53/udp
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=0
+      - net.ipv6.conf.default.disable_ipv6=0
+      - net.ipv6.conf.lo.disable_ipv6=0
+      - net.ipv4.tcp_keepalive_intvl=1
+      - net.ipv4.tcp_keepalive_probes=3
+      - net.ipv4.tcp_keepalive_time=30
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10M"
+        max-file: "10"
+    healthcheck:
+      test: /app/healthcheck.sh "${ENABLE_VPN}" "${ENABLE_DNS}" "${AUTO_RESTART_SERVICES}" || exit 1
+      timeout: 30s
+      interval: 5m
+      start_period: 60s
+      retries: 2
+```
+
+- See [.env.sample⁠](.env.sample) for Environment Variables. Review usage approaches⁠ below for additional information.
+- See [Docker Hub tdharris/corpvpn](https://hub.docker.com/r/tdharris/corpvpn) for more information on the image. You can also build the image locally with the provided Dockerfile.
 
 ### Approach 1: Proxy Leveraging Host's Network
 
@@ -61,6 +108,7 @@ Please note that not all VPN servers support connections from `openconnect`. Che
     Update the following in the `.env` file:
 
     ```shell
+    ENABLE_VPN=true
     VPN_SERVER=<vpn server address>
     VPN_USER=<vpn username>
     VPN_PASS=<vpn password>
