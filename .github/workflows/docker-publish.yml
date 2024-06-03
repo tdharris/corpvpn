@@ -17,6 +17,10 @@ on:
         default: false
         type: boolean
 
+env:
+  TEST_TAG: tdharris/corpvpn:test
+  LATEST_TAG: tdharris/corpvpn:latest
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -34,10 +38,20 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and Push
+      - name: Build and export to Docker
         uses: docker/build-push-action@v5
         with:
           context: .
           load: true
-          tags: tdharris/corpvpn:latest
+          tags: ${{ env.TEST_TAG }}
+
+      - name: Test
+        run: |
+          docker run -e CI=true --rm ${{ env.TEST_TAG }}
+
+      - name: Build and Push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          tags: ${{ env.LATEST_TAG }}
           push: ${{ !github.event.inputs.dryRun }}

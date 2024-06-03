@@ -56,6 +56,11 @@ show_versions() {
 
 start
 
+if [[ "$CI" == "true" ]]; then
+  log info "$log_prefix Running in CI environment, exiting..."
+  exit 0
+fi
+
 # wait forever
 while true; do
   tail -f /dev/null & wait ${!}
