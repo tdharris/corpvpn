@@ -16,7 +16,8 @@ on:
         required: false
         default: false
         type: boolean
-
+  schedule:
+    - cron: "37 13 1 * *" # monthly at 1:37 PM UTC
 env:
   TEST_TAG: tdharris/corpvpn:test
   LATEST_TAG: tdharris/corpvpn:latest
