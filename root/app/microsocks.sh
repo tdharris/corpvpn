@@ -10,7 +10,7 @@ log_prefix="[$(basename "${BASH_SOURCE[0]}")]"
 
 start() {
     log info "$log_prefix Starting microsocks..."
-    microsocks -p 9118 &
+    microsocks -p 9118 >/proc/1/fd/1 2>&1 &
     log info "$log_prefix ✔ Started microsocks, pid:$(pgrep microsocks)"
 }
 
@@ -20,8 +20,8 @@ stop() {
     if [[ -n ${microsocks_pid} ]]; then
         log info "$log_prefix Stopping microsocks..."
         kill -s SIGTERM "${microsocks_pid}"
-        while [[ -e /proc/${microsocks_pid} ]]; do sleep 1; done;
-        log info "$log_prefix ✔ Stopped microsocks.";
+        while [[ -e /proc/${microsocks_pid} ]]; do sleep 1; done
+        log info "$log_prefix ✔ Stopped microsocks."
     fi
 }
 
