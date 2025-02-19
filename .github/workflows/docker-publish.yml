@@ -57,4 +57,4 @@ jobs:
           tags: ${{ env.LATEST_TAG }}
           provenance: mode=max
           sbom: true
-          push: ${{ !github.event.inputs.dryRun }}
+          push: ${{ github.event.inputs.dryRun != 'true' }}
